@@ -64,11 +64,11 @@ class Blockchain:
     def get_balance(self, address):
         balance = 0
         for block in self.chain:
-            for trans in block.get_transactions():
-                if trans.sender == address:
-                    balance -= trans.amount
-                if trans.receiver == address:
-                    balance += trans.amount
+            for transaction in block.transactions:
+                if transaction.sender == address:
+                    balance -= transaction.amount
+                if transaction.receiver == address:
+                    balance += transaction.amount
         return balance
 
     def is_chain_valid(self):
