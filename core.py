@@ -10,17 +10,15 @@ class Transaction:
 
 
 class Block:
-    def __init__(self, previous_hash, transactions, nonce=0):
+    def __init__(self, previous_hash, transactions, timestamp, nonce=0):
         self.previous_hash = previous_hash
         self.transactions = transactions
+        self.timestamp = timestamp
         self.nonce = nonce
         self.hash = self.calculate_hash()
 
-    def get_transactions(self):
-        return self.transactions
-
     def calculate_hash(self):
-        data = self.previous_hash + str(self.nonce) + str([t.__dict__ for t in self.transactions])
+        data = self.previous_hash + str(self.timestamp) + str(self.nonce) + str([t.__dict__ for t in self.transactions])
         sha = hashlib.sha256()
         sha.update(data.encode('utf-8'))
         return sha.hexdigest()
@@ -43,13 +41,14 @@ class Blockchain:
 
     @staticmethod
     def create_genesis_block():
-        return Block("0", [], 0)
+        return Block("0", [], 0, 0)
 
     def add_block(self, block):
         self.chain.append(block)
 
     def mine_pending_transactions(self, miner_address):
-        block = Block(self.get_last_block().hash, self.pending_transactions)
+        timestamp = int(time.time())
+        block = Block(self.get_last_block().hash, self.pending_transactions, timestamp)
         block.mine_block(self.difficulty)
         print(f"Block mined: {block.hash}")
         self.add_block(block)
