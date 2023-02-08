@@ -16,6 +16,9 @@ class Block:
         self.nonce = nonce
         self.hash = self.calculate_hash()
 
+    def get_transactions(self):
+        return self.transactions
+
     def calculate_hash(self):
         data = self.previous_hash + str(self.nonce) + str([t.__dict__ for t in self.transactions])
         sha = hashlib.sha256()
@@ -58,6 +61,16 @@ class Blockchain:
     def get_last_block(self):
         return self.chain[-1]
 
+    def get_balance(self, address):
+        balance = 0
+        for block in self.chain:
+            for trans in block.get_transactions():
+                if trans.sender == address:
+                    balance -= trans.amount
+                if trans.receiver == address:
+                    balance += trans.amount
+        return balance
+
     def is_chain_valid(self):
         for i in range(1, len(self.chain)):
             current_block = self.chain[i]
@@ -71,12 +84,13 @@ class Blockchain:
         return True
 
 
-blockchain = Blockchain()
+if __name__ == '__main__':
+    blockchain = Blockchain()
 
-print("Mining block 1...")
-blockchain.add_transaction(Transaction("A", "B", 100))
-blockchain.mine_pending_transactions("miner1")
+    print("Mining block 1...")
+    blockchain.add_transaction(Transaction("A", "B", 100))
+    blockchain.mine_pending_transactions("miner1")
 
-print("Mining block 2...")
-blockchain.add_transaction(Transaction("C", "D", 10))
-blockchain.mine_pending_transactions("miner2")
+    print("Mining block 2...")
+    blockchain.add_transaction(Transaction("C", "D", 10))
+    blockchain.mine_pending_transactions("miner2")
